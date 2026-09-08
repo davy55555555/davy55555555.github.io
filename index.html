@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia de Estudo — Linguagens Formais e Autômatos</title>
+<meta name="description" content="Diário de aulas, atividades e guia sobre a Hierarquia de Chomsky para a disciplina de Linguagens Formais e Autômatos.">
+<meta name="theme-color" content="#8a5a2b">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root{
+    --bg:#faf9f7; --bg-elevated:#ffffff; --border:#e4e0d8;
+    --text:#2b2620; --text-muted:#6b6357; --accent:#8a5a2b; --accent-soft:#f0e4d2;
+    --code-bg:#f4f0e8; --shadow:0 1px 3px rgba(0,0,0,.06);
+    --tab-inactive:#f0ece3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1c1a17; --bg-elevated:#252220; --border:#3a352d;
+      --text:#ecE7dd; --text-muted:#a89e8c; --accent:#d99a52; --accent-soft:#3a2e1c;
+      --code-bg:#2a2620; --shadow:0 1px 3px rgba(0,0,0,.3);
+      --tab-inactive:#2a2620;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1c1a17; --bg-elevated:#252220; --border:#3a352d;
+    --text:#ecE7dd; --text-muted:#a89e8c; --accent:#d99a52; --accent-soft:#3a2e1c;
+    --code-bg:#2a2620; --shadow:0 1px 3px rgba(0,0,0,.3);
+    --tab-inactive:#2a2620;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65;
+  }
+  header{
+    padding:2.5rem 1.5rem 1.5rem; text-align:center; border-bottom:1px solid var(--border);
+    background:var(--bg-elevated);
+  }
+  header h1{margin:0 0 .4rem; font-size:1.6rem}
+  header p{margin:0; color:var(--text-muted); font-size:.95rem}
+  nav.tabs{
+    display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;
+    padding:1rem 1rem 0; max-width:900px; margin:0 auto;
+  }
+  nav.tabs button{
+    font:inherit; font-size:.9rem; padding:.55rem 1.1rem; border-radius:999px;
+    border:1px solid var(--border); background:var(--tab-inactive); color:var(--text);
+    cursor:pointer; transition:background .15s, color .15s;
+  }
+  nav.tabs button.active{background:var(--accent); color:#fff; border-color:var(--accent)}
+  main{max-width:800px; margin:0 auto; padding:1.5rem 1.25rem 4rem}
+  section.panel{display:none}
+  section.panel.active{display:block; animation:fade .2s ease}
+  @keyframes fade{from{opacity:0} to{opacity:1}}
+  .card{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:14px;
+    padding:1.4rem 1.5rem; margin-bottom:1.25rem; box-shadow:var(--shadow);
+  }
+  .card h2{margin-top:0; font-size:1.25rem}
+  .card h3{font-size:1.05rem; color:var(--accent); margin-bottom:.4rem}
+  code, pre{
+    background:var(--code-bg); border-radius:6px; font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:.88em;
+  }
+  code{padding:.15em .4em}
+  pre{padding:.9rem 1rem; overflow-x:auto; line-height:1.5}
+  pre code{padding:0; background:none}
+  table{width:100%; border-collapse:collapse; font-size:.9rem; margin:.75rem 0}
+  th,td{border:1px solid var(--border); padding:.5rem .65rem; text-align:left}
+  th{background:var(--accent-soft)}
+  .tag{
+    display:inline-block; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.03em; padding:.2rem .55rem; border-radius:999px; margin-bottom:.6rem;
+  }
+  .tag.done{background:#d7ecd9; color:#1e5c25}
+  .tag.pending{background:var(--accent-soft); color:var(--accent)}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .tag.done{background:#1e3a22; color:#8fd99a}
+  }
+  :root[data-theme="dark"] .tag.done{background:#1e3a22; color:#8fd99a}
+  .callout{
+    border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:.85rem 1rem; border-radius:0 8px 8px 0; margin:1rem 0; font-size:.92rem;
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+  @media (max-width:600px){.grid2{grid-template-columns:1fr}}
+  ul{padding-left:1.3rem}
+  li{margin-bottom:.3rem}
+  a{color:var(--accent)}
+  .doc-link{
+    display:inline-block; margin-right:0.8rem; margin-bottom:0.8rem;
+    padding:0.6rem 1rem; background:var(--accent-soft); border:1px solid var(--accent);
+    border-radius:6px; text-decoration:none; color:var(--accent); font-size:.95rem;
+    transition:background .15s, color .15s;
+  }
+  .doc-link:hover{background:var(--accent); color:#fff}
+  footer{text-align:center; color:var(--text-muted); font-size:.8rem; padding:2rem 1rem}
+  #install-btn{
+    display:none; padding:0.6rem 1rem; background:var(--accent); color:#fff;
+    border:none; border-radius:6px; cursor:pointer; font-size:.95rem;
+    margin-left:auto;
+  }
+  #install-btn.show{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 Guia de Estudo — Linguagens Formais e Autômatos</h1>
+  <p>Diário de aulas, atividades e o porquê da Hierarquia de Chomsky importar</p>
+  <button id="install-btn">📲 Instalar App</button>
+</header>
+
+<nav class="tabs">
+  <button data-panel="diario" class="active">Diário de Aulas</button>
+  <button data-panel="atividades">Atividades</button>
+  <button data-panel="chomsky">Chomsky</button>
+</nav>
+
+<main id="content">
+
+<!-- ===================== DIÁRIO DE AULAS ===================== -->
+<section id="diario" class="panel active">
+
+  <div class="card">
+    <h2>Cronograma da disciplina</h2>
+    <p style="color:var(--text-muted); font-size:.9rem">Profa. Kadidja Valéria — semestre 2026/2 · metodologia PBL</p>
+    <table>
+      <thead><tr><th>Semana</th><th>Data</th><th>Conteúdo</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>04/08</td><td>Aula Inaugural — plano de ensino, PBL, GitHub</td></tr>
+        <tr><td>2</td><td>11/08</td><td>Fundamentos de Linguagens Formais <span class="tag done" style="margin:0">0,5pt</span></td></tr>
+        <tr><td>3</td><td>18/08</td><td>Gramáticas Formais — tipos segundo Chomsky</td></tr>
+        <tr><td>4</td><td>25/08</td><td>Autômatos Finitos (AFD/AFN)</td></tr>
+        <tr><td>5</td><td>01/09</td><td>Expressões Regulares</td></tr>
+        <tr><td>6</td><td>08/09</td><td>Autômatos de Pilha — Linguagens Livres de Contexto</td></tr>
+        <tr><td>7</td><td>15/09</td><td>Máquinas de Turing</td></tr>
+        <tr><td>8</td><td>22/09</td><td><strong>Avaliação A2</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      📊 <strong>Composição de notas</strong> (fonte: Plano de Aulas oficial): <strong>A1</strong> (regimental, 17-24/11) + <strong>A2</strong> (prática, ao longo do semestre) = 5,0 + 5,0. A2 se compõe de atividades práticas com autômatos, implementações e participação em discussões sobre a hierarquia de Chomsky. Presença mínima de 75% obrigatória.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag done">Concluída — 11/08</span>
+    <h2>Aula 1 — Linguagens Formais e Gramáticas</h2>
+
+    <h3>Operadores lógicos</h3>
+    <table>
+      <thead><tr><th>Símbolo</th><th>Nome</th><th>Leitura</th></tr></thead>
+      <tbody>
+        <tr><td><code>¬</code></td><td>Negação</td><td>não</td></tr>
+        <tr><td><code>∧</code></td><td>E</td><td>e</td></tr>
+        <tr><td><code>∨</code></td><td>OU</td><td>ou</td></tr>
+        <tr><td><code>→</code></td><td>Implicação</td><td>implica / se... então</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Palavra vazia — ε</h3>
+    <p>Cadeia sem nenhum símbolo. <code>|ε| = 0</code>. Não é espaço em branco — é a ausência total de símbolos.</p>
+
+    <h3>Prefixos e sufixos</h3>
+    <p>Para a palavra <code>ab</code>: prefixos <code>{ε, a, ab}</code>, sufixos <code>{ε, b, ab}</code>.</p>
+
+    <h3>Alfabeto (Σ) e Σ*</h3>
+    <p><code>Σ</code> é um conjunto finito de símbolos (ex: <code>Σ = {a, b}</code>). <code>Σ*</code> é o conjunto de <strong>todas</strong> as cadeias finitas possíveis com esses símbolos, incluindo a cadeia vazia. Para <code>Σ = {a, b}</code>, temos <code>Σ* = {ε, a, b, aa, ab, ba, bb, aaa, ...}</code>.</p>
+
+    <h3>Linguagem formal — L</h3>
+    <p><code>L ⊆ Σ*</code>: uma linguagem é qualquer subconjunto de todas as cadeias possíveis. Pode ser finita ou infinita.</p>
+
+    <h3>Gramática formal</h3>
+    <p>Representada como <code>G = (N, Σ, P, S)</code> — não-terminais, terminais, produções, símbolo inicial. Exemplo:</p>
+    <pre><code>G = ({S}, {a}, {S → aS | ε}, S)
+L(G) = {aⁿ | n ≥ 0} = {ε, a, aa, aaa, ...}</code></pre>
+
+    <div class="callout">💡 O símbolo <code>→</code> muda de sentido conforme o contexto: em <strong>lógica</strong> é implicação ("se... então"); em <strong>gramáticas</strong> é produção (derivação de um não-terminal para uma sequência de símbolos).</div>
+  </div>
+
+  <div class="card">
+    <span class="tag pending">Próxima — 18/08</span>
+    <h2>Aula 2 — Gramáticas Formais e Hierarquia de Chomsky</h2>
+    <p style="color:var(--text-muted)">Conteúdo ainda não publicado pela professora. Ver aba <strong>Chomsky</strong> para o pré-estudo do tema.</p>
+  </div>
+
+</section>
+
+<!-- ===================== ATIVIDADES ===================== -->
+<section id="atividades" class="panel">
+
+  <div class="card">
+    <h2>📚 Materiais de Estudo — Unidade 1</h2>
+    <p>Acesse os documentos detalhados em Markdown:</p>
+    <div>
+      <a href="https://github.com/Lucasdoreac/InteligenciaArtificial_LinguagensFormais_Automatos/blob/main/Unidade1_LinguagensFormais/Atividades_Aula1.md" class="doc-link">📄 Atividades da Aula 1</a>
+      <a href="https://github.com/Lucasdoreac/InteligenciaArtificial_LinguagensFormais_Automatos/blob/main/Unidade1_LinguagensFormais/Checklist_Aula1.md" class="doc-link">✅ Checklist da Aula 1</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag done">Entregue</span>
+    <h2>Atividade 1 — Prefixos e Sufixos</h2>
+    <p>Considere a palavra <code>ab</code>.</p>
+    <div class="grid2">
+      <div>
+        <h3>Prefixos</h3>
+        <p>Parte da palavra que começa no início:</p>
+        <pre><code>Prefixos(ab) = {ε, a, ab}</code></pre>
+      </div>
+      <div>
+        <h3>Sufixos</h3>
+        <p>Parte da palavra que termina no final:</p>
+        <pre><code>Sufixos(ab) = {ε, b, ab}</code></pre>
+      </div>
+    </div>
+    <div class="callout">A palavra vazia <code>ε</code> é, ao mesmo tempo, prefixo e sufixo de qualquer palavra — <code>|ε| = 0</code> não contradiz nenhuma das duas definições.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag done">Entregue</span>
+    <h2>Atividade 2 — Gramática</h2>
+    <p>Considere a gramática <code>G = ({S}, {a}, {S → aS | ε}, S)</code>.</p>
+    <table>
+      <thead><tr><th>Elemento</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Não terminais (N)</td><td><code>{S}</code></td></tr>
+        <tr><td>Terminais (Σ)</td><td><code>{a}</code></td></tr>
+        <tr><td>Produções (P)</td><td><code>S → aS | ε</code></td></tr>
+        <tr><td>Símbolo inicial</td><td><code>S</code></td></tr>
+      </tbody>
+    </table>
+    <h3>Três palavras geradas, com derivação</h3>
+    <pre><code>ε:   S → ε
+a:   S → aS → aε → a
+aa:  S → aS → aaS → aaε → aa</code></pre>
+    <p>Generalizando: <code>L(G) = {aⁿ | n ≥ 0}</code> — qualquer quantidade (incluindo zero) do símbolo <code>a</code>.</p>
+  </div>
+
+</section>
+
+<!-- ===================== CHOMSKY ===================== -->
+<section id="chomsky" class="panel">
+
+  <div class="card">
+    <h2>Quem foi (é) Noam Chomsky, e por que ele aparece numa disciplina de computação</h2>
+    <p>
+      Noam Chomsky é linguista, e em 1956 publicou um artigo — <em>"Three
+      models for the description of language"</em> — que tentava responder
+      uma pergunta de linguística: <strong>que tipo de regra matemática é
+      capaz de descrever uma língua humana?</strong> A resposta dele não
+      ficou só na linguística. Ela virou, sem que essa fosse a intenção
+      original, uma das ferramentas mais usadas em toda a Ciência da
+      Computação.
+    </p>
+    <p>
+      A ideia central: em vez de tentar listar frase por frase o que "é"
+      português ou inglês (impossível — são infinitas), Chomsky propôs
+      descrever uma língua por meio de um conjunto pequeno de
+      <strong>regras de produção</strong> (as gramáticas formais que vimos
+      na Aula 1) capazes de <em>gerar</em> todas as frases válidas. A
+      pergunta seguinte foi: existem regras "mais simples" e regras "mais
+      poderosas"? Dá pra organizar isso numa hierarquia?
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>A Hierarquia de Chomsky</h2>
+    <p>Chomsky organizou as gramáticas formais em <strong>4 classes</strong>, do mais simples/restrito ao mais poderoso/geral. Cada classe superior consegue tudo que a inferior consegue, e mais:</p>
+    <table>
+      <thead><tr><th>Tipo</th><th>Nome</th><th>Reconhecida por</th><th>Exemplo de uso real</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>Regular</td><td>Autômato Finito (AFD/AFN)</td><td>expressões regulares, validação de e-mail/CEP, lexers</td></tr>
+        <tr><td>2</td><td>Livre de Contexto</td><td>Autômato de Pilha</td><td>sintaxe de linguagens de programação, parsers, HTML/JSON aninhado</td></tr>
+        <tr><td>1</td><td>Sensível ao Contexto</td><td>Autômato Linear Limitado</td><td>casos raros na prática — mais teórico</td></tr>
+        <tr><td>0</td><td>Irrestrita (recursivamente enumerável)</td><td>Máquina de Turing</td><td>o limite do que qualquer computador pode computar</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">🧠 Regra de ouro pra guardar: <strong>quanto mais "aninhamento" ou "contagem sem limite" uma linguagem exige, mais alta ela sobe na hierarquia.</strong> Uma linguagem regular não pode contar ou aninhar; uma livre de contexto permite aninhamento com pilha; sensível ao contexto e irrestrita são ainda mais poderosas.</div>
+  </div>
+
+  <div class="card">
+    <h2>Por que isso importa na prática (não só na prova)</h2>
+    <ul>
+      <li><strong>Compiladores e interpretadores.</strong> Todo compilador tem um analisador léxico (regular, Tipo 3) e um analisador sintático (livre de contexto, Tipo 2) — é literalmente a arquitetura clássica de front-end de compiladores.</li>
+      <li><strong>Expressões regulares (regex).</strong> Todo <code>grep</code>, toda validação de formulário com regex, é uma gramática Tipo 3 na prática. Saber os limites da hierarquia explica por que você <strong>não consegue</strong> usar regex para validar parênteses aninhados — precisa de Tipo 2.</li>
+      <li><strong>Processamento de linguagem natural / IA.</strong> A ponte entre Fase 1 (linguagens formais) e Fase 2 (IA) da disciplina existe porque toda a base teórica de "que padrão uma máquina consegue aprender" começou aqui.</li>
+      <li><strong>Limites da computação.</strong> A Máquina de Turing (Tipo 0) não é só "o computador mais poderoso" — ela define o próprio limite teórico do que é computável. O Problema da Parada prova formalmente que nem Turing consegue resolver tudo.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Como isso conecta com o nosso projeto do <code>lfa-tcc</code></h2>
+    <p>
+      O levantamento feito sobre o DSL de comandos do maintainer do SOBER
+      (61 comandos, 182 lexemas) concluiu formalmente que a linguagem
+      implementada hoje é <strong>Regular (Tipo 3)</strong> — nenhuma
+      construção nela exige contagem sem limite ou aninhamento real. Ainda
+      assim, o projeto escolhe implementar a camada <strong>Livre de
+      Contexto (Tipo 2)</strong> porque:
+    </p>
+    <ol>
+      <li>o DSL <em>projetado</em> (não o de hoje) prevê planos aninhados e argumentos estruturados que exigiriam pilha;</li>
+      <li>descrever 61 comandos × 44 formas de argumento como gramática LC é ordens de magnitude mais compacto que o AFD equivalente;</li>
+      <li>a arquitetura em camadas cobre mais da ementa da disciplina de uma vez (Semana 4 + Semana 6).</li>
+    </ol>
+    <p>É um exemplo real — não de sala de aula — de quando vale a pena "subir" na hierarquia mesmo sem necessidade formal estrita.</p>
+  </div>
+
+</section>
+
+</main>
+
+<footer>Guia de estudo pessoal — Linguagens Formais e Autômatos, 2026/2</footer>
+
+<script>
+  // PWA & Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+
+  let deferredPrompt;
+  const installBtn = document.getElementById('install-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add('show');
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      installBtn.classList.remove('show');
+      deferredPrompt = null;
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBtn.classList.remove('show');
+    deferredPrompt = null;
+  });
+
+  // Tab Navigation
+  const buttons = document.querySelectorAll('nav.tabs button');
+  const panels = document.querySelectorAll('section.panel');
+  
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+      history.replaceState(null, '', '#' + btn.dataset.panel);
+    });
+  });
+
+  const hash = location.hash.replace('#', '');
+  if (hash) {
+    const btn = document.querySelector(`nav.tabs button[data-panel="${hash}"]`);
+    if (btn) btn.click();
+  }
+</script>
+
+</body>
+</html>
